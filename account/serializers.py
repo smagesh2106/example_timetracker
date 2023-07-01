@@ -33,6 +33,18 @@ class CustomUserSerializer( serializers.ModelSerializer):
             raise serializers.ValidationError({"email":("email already taken.")})
         return super().validate(args)
 
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        instance = self.Meta.model(**validated_data)
+        
+        # Adding the below line made it work for me.
+        instance.is_active = True
+        if password is not None:
+            # Set password does the hash, so you don't need to call make_password 
+            instance.set_password(password) #without this step password is not hashed, user cannot login.
+        instance.save()
+        return instance
+    
     class Meta:
         model = CustomUser
         fields = ['id','name','email', 'password']
@@ -40,3 +52,11 @@ class CustomUserSerializer( serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
+class CustomUserSerializer2( serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ['id','name','email', 'password']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }

@@ -1,4 +1,4 @@
-from .serializers import MyTokenObtainPairSerializer, ChangePasswordSerializer, CustomUserSerializer
+from .serializers import MyTokenObtainPairSerializer, ChangePasswordSerializer, CustomUserSerializer, CustomUserSerializer2
 from .models import CustomUser
 from rest_framework import generics, status, permissions, response, filters, pagination, response
 from rest_framework_simplejwt import views
@@ -52,3 +52,20 @@ class RegisterView( APIView):
         serializer.is_valid(raise_exception=True)         
         serializer.save()
         return response.Response(serializer.data)
+
+class UserPagination(pagination.LimitOffsetPagination):
+    default_limit = 5
+    max_limit = 100
+
+class UserListView(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAdminUser,)
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer2
+    filter_backends = (filters.SearchFilter,filters.OrderingFilter)
+    search_fields = ['name','email']
+    pagination_class = UserPagination
+
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAdminUser,)
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer2
