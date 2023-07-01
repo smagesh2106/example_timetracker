@@ -29,7 +29,7 @@ class CustomUserSerializer( serializers.ModelSerializer):
 
     def validate(self,args):
         email = args.get("email",None)
-        if CustomUser.objects.filter(email=None).exists():
+        if CustomUser.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email":("email already taken.")})
         return super().validate(args)
 
