@@ -15,6 +15,10 @@ class CustomUser(AbstractUser, PermissionsMixin):
     REQUIRED_FIELDS = []
     objects = UserManager()
     
+    class Meta:
+        permissions = (
+            ('list_users','list all users'),
+        )
 
 #    def get_absolute_url(self):
 #        return "/users/%i/" % (self.pk)
